@@ -1,0 +1,27 @@
+# Flask and Extensions
+Flask>=2.0.0
+flask-restx>=1.1.0
+Flask-SQLAlchemy>=3.0.0
+Flask-Migrate>=4.0.0
+python-dotenv>=1.0.0
+
+# Database
+SQLAlchemy>=2.0.0
+psycopg2-binary>=2.9.0
+
+# Authentication
+PyJWT>=2.8.0
+bcrypt>=4.0.0
+
+# Utilities
+python-dateutil>=2.8.0
+typing-extensions>=4.7.0
+
+# Development
+black>=23.7.0
+flake8>=6.1.0
+pytest>=7.4.0
+
+# Added from the code block
+networkx==3.1
+matplotlib==3.7.2 
