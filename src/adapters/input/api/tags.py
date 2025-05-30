@@ -115,7 +115,4 @@ class TagRelationships(Resource):
     def get(self, tag_name):
         """Get relationships for a specific tag. Requires authentication."""
         relationships = tag_service.get_tag_relationships(tag_name)
-        return {
-            "tag_name": tag_name,
-            "related_tags": relationships
-        }
+        return {"tag_name": tag_name, "related_tags": relationships}

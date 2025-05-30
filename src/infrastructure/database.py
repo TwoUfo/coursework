@@ -4,4 +4,4 @@ from flask_migrate import Migrate
 from adapters.output.persistence.sqlalchemy.models.base import Base
 
 db = SQLAlchemy(model_class=Base)
-migrate = Migrate() 
+migrate = Migrate()

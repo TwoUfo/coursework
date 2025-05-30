@@ -24,7 +24,10 @@ def create_tags():
         {"name": "Networking", "description": "Professional and social connections"},
         # Activity-based moods
         {"name": "Energetic", "description": "Full of energy and enthusiasm"},
-        {"name": "Creative", "description": "Inspiring artistic or innovative thinking"},
+        {
+            "name": "Creative",
+            "description": "Inspiring artistic or innovative thinking",
+        },
         {"name": "Focused", "description": "Conducive to concentration"},
         {"name": "Productive", "description": "Efficient and results-oriented"},
         {"name": "Adventurous", "description": "Exciting and potentially dangerous"},
@@ -48,37 +51,30 @@ def create_tags():
         ("Happy", "Social", 0.7),
         ("Happy", "Friendly", 0.9),
         ("Happy", "Party", 0.6),
-        
         # Excited relationships
         ("Excited", "Energetic", 0.9),
         ("Excited", "Party", 0.8),
         ("Excited", "Adventurous", 0.7),
-        
         # Relaxed relationships
         ("Relaxed", "Peaceful", 0.9),
         ("Relaxed", "Cozy", 0.8),
         ("Relaxed", "Focused", 0.6),
-        
         # Social relationships
         ("Social", "Friendly", 0.9),
         ("Social", "Party", 0.8),
         ("Social", "Networking", 0.7),
-        
         # Romantic relationships
         ("Romantic", "Intimate", 0.9),
         ("Romantic", "Elegant", 0.7),
         ("Romantic", "Cozy", 0.6),
-        
         # Creative relationships
         ("Creative", "Modern", 0.7),
         ("Creative", "Mysterious", 0.5),
         ("Creative", "Energetic", 0.6),
-        
         # Atmospheric connections
         ("Elegant", "Modern", 0.6),
         ("Traditional", "Cozy", 0.7),
         ("Mysterious", "Intimate", 0.5),
-        
         # Activity connections
         ("Productive", "Focused", 0.8),
         ("Adventurous", "Energetic", 0.8),

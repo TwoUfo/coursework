@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, Integer, String
 
 from adapters.output.persistence.sqlalchemy.models.base import Base
 
+
 class UserModel(Base):
     __tablename__ = "users"
 
@@ -12,9 +13,10 @@ class UserModel(Base):
 
     def to_domain(self):
         from domain.models.user import User
+
         return User(
             id=self.id,
             email=self.email,
             password_hash=self.password_hash,
-            is_admin=self.is_admin
-        ) 
+            is_admin=self.is_admin,
+        )

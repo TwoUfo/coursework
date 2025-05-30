@@ -7,19 +7,19 @@ from infrastructure.database import db as _db
 from app import create_app
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def app():
     """Create and configure a test Flask application."""
     app = create_app()
-    app.config['TESTING'] = True
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-    app.config['JWT_SECRET_KEY'] = 'test-secret-key'
-    app.config['SECRET_KEY'] = 'test-secret-key'
-    
+    app.config["TESTING"] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///:memory:"
+    app.config["JWT_SECRET_KEY"] = "test-secret-key"
+    app.config["SECRET_KEY"] = "test-secret-key"
+
     return app
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope="session")
 def db(app):
     """Create and configure a test database."""
     with app.app_context():
@@ -28,19 +28,19 @@ def db(app):
         _db.drop_all()
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def session(db):
     """Create a new database session for a test."""
     connection = db.engine.connect()
     transaction = connection.begin()
-    
+
     options = dict(bind=connection, binds={})
     session = db.create_scoped_session(options=options)
-    
+
     db.session = session
-    
+
     yield session
-    
+
     transaction.rollback()
     connection.close()
     session.remove()
@@ -55,6 +55,4 @@ def client(app):
 @pytest.fixture
 def auth_headers():
     """Create authentication headers for testing."""
-    return {
-        'Authorization': 'Bearer test-token'
-    } 
+    return {"Authorization": "Bearer test-token"}

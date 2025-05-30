@@ -25,7 +25,7 @@ def generate_jwt(session_id: str, expires_in: int = 3600) -> str:
     """Generate a JWT token with session_id."""
     payload = {
         "session_id": session_id,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in)
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(seconds=expires_in),
     }
     return jwt.encode(payload, JWT_SECRET_KEY, algorithm=ALGORITHM)
 
@@ -48,13 +48,14 @@ def set_cookie(response: Response, key: str, value: str) -> Response:
         httponly=True,
         secure=True,
         samesite="Strict",
-        max_age=3600  # 1 hour
+        max_age=3600,  # 1 hour
     )
     return response
 
 
 def login_required(f: Callable) -> Callable:
     """Decorator to protect routes that require authentication."""
+
     @wraps(f)
     def decorated(*args: Any, **kwargs: Any) -> Any:
         token = request.cookies.get("access_token")
@@ -70,15 +71,18 @@ def login_required(f: Callable) -> Callable:
             return {"message": "Invalid session"}, 401
 
         return f(*args, **kwargs)
+
     return decorated
 
 
 def admin_required(f: Callable) -> Callable:
     """Decorator to protect routes that require admin privileges."""
+
     @wraps(f)
     @login_required
     def decorated(*args: Any, **kwargs: Any) -> Any:
         if not session.get("is_admin"):
             return {"message": "Admin privileges required"}, 403
         return f(*args, **kwargs)
-    return decorated 
+
+    return decorated
