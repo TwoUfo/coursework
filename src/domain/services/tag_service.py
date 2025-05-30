@@ -18,6 +18,13 @@ class TagService(TagServicePort):
         tag = Tag(name=name, description=description)
         return self.tag_repository.save(tag)
 
+    def create_tag_if_not_exists(self, name: str, description: Optional[str] = None) -> Tag:
+        """Create a tag if it doesn't exist, otherwise return existing tag."""
+        existing_tag = self.tag_repository.get_by_name(name)
+        if existing_tag:
+            return existing_tag
+        return self.create_tag(name, description)
+
     def create_relationship(
         self, source_name: str, target_name: str, weight: float
     ) -> TagRelationship:

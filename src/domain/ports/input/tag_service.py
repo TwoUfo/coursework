@@ -13,6 +13,11 @@ class TagServicePort(ABC):
         pass
 
     @abstractmethod
+    def create_tag_if_not_exists(self, name: str, description: Optional[str] = None) -> Tag:
+        """Create a tag if it doesn't exist, otherwise return existing tag."""
+        pass
+
+    @abstractmethod
     def create_relationship(
         self, source_name: str, target_name: str, weight: float
     ) -> TagRelationship:
