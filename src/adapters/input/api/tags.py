@@ -2,6 +2,7 @@ from flask import request
 from flask_restx import Resource, Namespace, fields
 
 from adapters.input.api.schemas import create_tag_schemas
+from adapters.input.api.auth.security import login_required, admin_required
 from domain.ports.input.tag_service import TagServicePort
 
 api = Namespace("tags", description="Tag operations")
@@ -46,14 +47,16 @@ def init_api(service):
 @api.route("")
 class TagList(Resource):
     @api.marshal_list_with(tag_model)
+    @login_required
     def get(self):
-        """Get all tags."""
+        """Get all tags. Requires authentication."""
         return tag_service.get_all_tags()
 
     @api.expect(tag_model)
     @api.marshal_with(tag_model)
+    @admin_required
     def post(self):
-        """Create a new tag."""
+        """Create a new tag. Admin only."""
         data = request.json
         tag = tag_service.create_tag(name=data["name"], description=data["description"])
         return tag
@@ -85,8 +88,9 @@ class TagResource(Resource):
 class TagRelationshipList(Resource):
     @api.expect(tag_relationship_model)
     @api.marshal_with(tag_relationship_model)
+    @admin_required
     def post(self):
-        """Create a new tag relationship."""
+        """Create a new tag relationship. Admin only."""
         data = request.json
         relationship = tag_service.create_relationship(
             source_tag_name=data["source_tag_name"],
@@ -102,3 +106,16 @@ class MoodGraph(Resource):
     def get(self):
         """Get the complete mood graph."""
         return tag_service.get_mood_graph()
+
+
+@api.route("/<string:tag_name>/relationships")
+class TagRelationships(Resource):
+    @api.marshal_with(mood_graph_model)
+    @login_required
+    def get(self, tag_name):
+        """Get relationships for a specific tag. Requires authentication."""
+        relationships = tag_service.get_tag_relationships(tag_name)
+        return {
+            "tag_name": tag_name,
+            "related_tags": relationships
+        }

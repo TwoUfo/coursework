@@ -15,6 +15,4 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=7)
 
     # Security
-    SESSION_TYPE = "filesystem"
-    SESSION_PERMANENT = False
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+    SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-here")

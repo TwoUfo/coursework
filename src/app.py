@@ -1,13 +1,12 @@
 from flask import Flask
 from flask_restx import Api
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
 from adapters.input.api.establishments import (
     api as establishments_api,
     init_api as init_establishments_api,
 )
 from adapters.input.api.tags import api as tags_api, init_api as init_tags_api
+from adapters.input.api.auth.routes import api as auth_api
 from adapters.output.persistence.sqlalchemy.repositories.establishment_repository import (
     SQLAlchemyEstablishmentRepository,
 )
@@ -25,22 +24,20 @@ from adapters.output.persistence.sqlalchemy.models.tag import (
     TagModel,
     TagRelationshipModel,
 )
-from adapters.output.persistence.sqlalchemy.models.base import Base
 from infrastructure.config import Config
-
-db = SQLAlchemy(model_class=Base)
-migrate = Migrate()
+from infrastructure.database import db, migrate
 
 
 def create_app():
     """Create and configure the Flask application."""
     app = Flask(__name__)
-
     app.config.from_object(Config)
 
+    # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
 
+    # Create API
     api = Api(
         app,
         title="Mood Establishments API",
@@ -48,6 +45,7 @@ def create_app():
         description="API for searching establishments by mood",
     )
 
+    # Initialize services
     tag_repository = SQLAlchemyTagRepository(db.session)
     tag_service = TagService(tag_repository)
 
@@ -56,11 +54,13 @@ def create_app():
         establishment_repository=establishment_repository, tag_service=tag_service
     )
 
+    # Initialize and register APIs
     init_establishments_api(establishment_service)
     init_tags_api(tag_service)
 
     api.add_namespace(establishments_api, path="/establishments")
     api.add_namespace(tags_api, path="/tags")
+    api.add_namespace(auth_api, path="/auth")
 
     return app
 

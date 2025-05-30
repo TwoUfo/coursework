@@ -2,6 +2,7 @@ from flask import request
 from flask_restx import Resource, Namespace, fields
 
 from adapters.input.api.schemas import create_establishment_schemas
+from adapters.input.api.auth.security import login_required, admin_required
 from domain.ports.input.establishment_service import EstablishmentServicePort
 
 api = Namespace("establishments", description="Establishment operations")
@@ -82,20 +83,28 @@ def init_api(service):
 class EstablishmentList(Resource):
     @api.expect(establishment_create_model)
     @api.marshal_with(establishment_model)
+    @admin_required
     def post(self):
-        """Create a new establishment."""
+        """Create a new establishment. Admin only."""
         data = request.json
         establishment = establishment_service.create_establishment(
             {"name": data["name"], "description": data.get("description", "")}
         )
         return establishment
 
+    @api.marshal_list_with(establishment_model)
+    @login_required
+    def get(self):
+        """Get all establishments. Requires authentication."""
+        return establishment_service.get_all_establishments()
+
 
 @api.route("/<int:id>")
 class EstablishmentResource(Resource):
     @api.marshal_with(establishment_model)
+    @login_required
     def get(self, id):
-        """Get an establishment by ID."""
+        """Get an establishment by ID. Requires authentication."""
         establishment = establishment_service.get_establishment(id)
         return establishment
 
@@ -104,8 +113,9 @@ class EstablishmentResource(Resource):
 class EstablishmentTags(Resource):
     @api.expect(add_tag_model)
     @api.marshal_with(success_response)
+    @admin_required
     def post(self, id):
-        """Add a tag to an establishment."""
+        """Add a tag to an establishment. Admin only."""
         data = request.json
         establishment_service.add_tag_to_establishment(
             establishment_id=id, tag_name=data["tag_name"]
@@ -121,8 +131,9 @@ class EstablishmentTags(Resource):
 class EstablishmentSearch(Resource):
     @api.expect(search_request)
     @api.marshal_list_with(establishment_model)
+    @login_required
     def post(self):
-        """Search establishments by tags."""
+        """Search establishments by tags. Requires authentication."""
         data = request.json
         tag_names = data.get("tag_names", [])
         limit = data.get("limit", 10)

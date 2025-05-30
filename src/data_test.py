@@ -1,17 +1,14 @@
 from flask import Flask
-from app import create_app, db
+from infrastructure.database import db
+from app import create_app
 from adapters.output.persistence.sqlalchemy.models.tag import (
     TagModel,
     TagRelationshipModel,
 )
-from adapters.output.persistence.sqlalchemy.models.establishment import (
-    EstablishmentModel,
-    EstablishmentTagModel,
-)
 
 
 def create_tags():
-    """Create test mood tags."""
+    """Create mood tags."""
     tags = [
         # Basic moods
         {"name": "Happy", "description": "Feeling or showing pleasure or contentment"},
@@ -27,10 +24,7 @@ def create_tags():
         {"name": "Networking", "description": "Professional and social connections"},
         # Activity-based moods
         {"name": "Energetic", "description": "Full of energy and enthusiasm"},
-        {
-            "name": "Creative",
-            "description": "Inspiring artistic or innovative thinking",
-        },
+        {"name": "Creative", "description": "Inspiring artistic or innovative thinking"},
         {"name": "Focused", "description": "Conducive to concentration"},
         {"name": "Productive", "description": "Efficient and results-oriented"},
         {"name": "Adventurous", "description": "Exciting and potentially dangerous"},
@@ -104,61 +98,9 @@ def create_tags():
     db.session.commit()
 
 
-def create_establishments():
-    """Create test establishments with tags."""
-    establishments = [
-        {
-            "name": "Cozy Coffee Corner",
-            "description": "A warm and inviting coffee shop perfect for relaxation",
-            "tags": [("Cozy", 3), ("Relaxed", 2), ("Peaceful", 2), ("Creative", 1)],
-        },
-        {
-            "name": "The Party Hub",
-            "description": "High-energy nightclub for party lovers",
-            "tags": [("Party", 3), ("Energetic", 3), ("Social", 2), ("Excited", 2)],
-        },
-        {
-            "name": "Elegant Dining",
-            "description": "Fine dining restaurant with romantic atmosphere",
-            "tags": [
-                ("Elegant", 3),
-                ("Romantic", 3),
-                ("Intimate", 2),
-                ("Traditional", 1),
-            ],
-        },
-        {
-            "name": "Modern Workspace",
-            "description": "Contemporary coworking space for professionals",
-            "tags": [
-                ("Modern", 3),
-                ("Focused", 3),
-                ("Productive", 2),
-                ("Networking", 2),
-            ],
-        },
-    ]
-
-    for est_data in establishments:
-        establishment = EstablishmentModel(
-            name=est_data["name"], description=est_data["description"]
-        )
-        db.session.add(establishment)
-        db.session.flush()
-
-        for tag_name, count in est_data["tags"]:
-            tag_rel = EstablishmentTagModel(
-                establishment_id=establishment.id, tag_name=tag_name, count=count
-            )
-            db.session.add(tag_rel)
-
-    db.session.commit()
-
-
 if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         db.drop_all()
         db.create_all()
         create_tags()
-        create_establishments()
