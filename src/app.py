@@ -13,17 +13,12 @@ from adapters.output.persistence.sqlalchemy.repositories.establishment_repositor
 from adapters.output.persistence.sqlalchemy.repositories.tag_repository import (
     SQLAlchemyTagRepository,
 )
+from adapters.output.persistence.sqlalchemy.repositories.comment_repository import (
+    SQLAlchemyCommentRepository,
+)
 from domain.services.establishment_service import EstablishmentService
 from domain.services.tag_service import TagService
 
-from adapters.output.persistence.sqlalchemy.models.establishment import (
-    EstablishmentModel,
-    EstablishmentTagModel,
-)
-from adapters.output.persistence.sqlalchemy.models.tag import (
-    TagModel,
-    TagRelationshipModel,
-)
 from infrastructure.config import Config
 from infrastructure.database import db, migrate
 
@@ -49,9 +44,12 @@ def create_app():
     tag_repository = SQLAlchemyTagRepository(db.session)
     tag_service = TagService(tag_repository)
 
+    comment_repository = SQLAlchemyCommentRepository(db.session)
     establishment_repository = SQLAlchemyEstablishmentRepository(db.session)
     establishment_service = EstablishmentService(
-        establishment_repository=establishment_repository, tag_service=tag_service
+        establishment_repository=establishment_repository,
+        comment_repository=comment_repository,
+        tag_service=tag_service,
     )
 
     # Initialize and register APIs

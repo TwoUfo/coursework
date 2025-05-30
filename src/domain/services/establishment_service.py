@@ -1,9 +1,12 @@
 from typing import List, Dict, Optional
 
 from domain.models.establishment import Establishment, EstablishmentTag
+from domain.models.comment import Comment
 from domain.ports.input.establishment_service import EstablishmentServicePort
 from domain.ports.output.establishment_repository import EstablishmentRepositoryPort
+from domain.ports.output.comment_repository import CommentRepositoryPort
 from domain.ports.input.tag_service import TagServicePort
+from domain.services.tag_service import TagService
 
 
 class EstablishmentService(EstablishmentServicePort):
@@ -12,9 +15,11 @@ class EstablishmentService(EstablishmentServicePort):
     def __init__(
         self,
         establishment_repository: EstablishmentRepositoryPort,
-        tag_service: TagServicePort,
+        comment_repository: CommentRepositoryPort,
+        tag_service: TagService,
     ):
         self.establishment_repository = establishment_repository
+        self.comment_repository = comment_repository
         self.tag_service = tag_service
 
     def create_establishment(self, data: Dict) -> Establishment:
@@ -28,10 +33,15 @@ class EstablishmentService(EstablishmentServicePort):
         """Get an establishment by ID."""
         return self.establishment_repository.get_by_id(establishment_id)
 
+    def get_all_establishments(self) -> List[Establishment]:
+        """Get all establishments."""
+        return self.establishment_repository.get_all()
+
     def add_tag_to_establishment(
         self, establishment_id: int, tag_name: str
     ) -> EstablishmentTag:
         """Add a tag to an establishment."""
+        self.tag_service.create_tag_if_not_exists(tag_name)
         return self.establishment_repository.add_tag(establishment_id, tag_name)
 
     def search_establishments(
@@ -63,3 +73,20 @@ class EstablishmentService(EstablishmentServicePort):
                         tag_weights[related_name] = weight
 
         return self.establishment_repository.get_by_tags(tag_weights, limit)
+
+    def add_comment(self, establishment_id: int, text: str, rating: int) -> Comment:
+        """Add a comment to an establishment."""
+        if not 1 <= rating <= 10:
+            raise ValueError("Rating must be between 1 and 10")
+
+        establishment = self.get_establishment(establishment_id)
+        if not establishment:
+            raise ValueError(f"Establishment with id {establishment_id} not found")
+
+        comment = Comment(
+            id=None,
+            establishment_id=establishment_id,
+            text=text,
+            rating=rating,
+        )
+        return self.comment_repository.save(comment)

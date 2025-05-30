@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional, List
+from .comment import Comment
 
 
 @dataclass
@@ -19,6 +20,7 @@ class Establishment:
     name: str
     description: str
     tags: List[EstablishmentTag]
+    comments: List[Comment] = None
     score: Optional[float] = None
     created_at: datetime = datetime.utcnow()
 
